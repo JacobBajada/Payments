@@ -1,0 +1,13 @@
+SELECT
+dim_merchant_mature_cohort."MERCHANT_028D_COHORT" AS "dim_merchant_mature_cohort.merchant_028_d_cohort"
+, (TO_CHAR(TO_DATE(dim_merchant_mature_cohort."REPORT_DATE" ), 'YYYY-MM-DD')) AS "dim_merchant_mature_cohort.report_date"
+, COALESCE(SUM(dim_merchant_mature_cohort."GPV_NET_FXD_USD_07D_52W" ), 0) AS "dim_merchant_mature_cohort.gpv_07_52w_days_trailing_fxd"
+, COALESCE(SUM(dim_merchant_mature_cohort."GPV_NET_FXD_USD_07D" ), 0) AS "dim_merchant_mature_cohort.gpv_07_days_trailing_fxd"
+FROM app_bi.app_bi_dw.dim_merchant_mature_cohort AS dim_merchant_mature_cohort
+WHERE (dim_merchant_mature_cohort."MERCHANT_028D_COHORT" ) IN ('Mature Churn', 'Mature Inactive', 'Mature Reactivate', 'Mature Retention')
+AND (dim_merchant_mature_cohort."MERCHANT_COUNTRY" ) = 'US'
+AND (dim_merchant_mature_cohort."PRODUCT_NAME" ) = 'ALL'
+AND ((( dim_merchant_mature_cohort."REPORT_DATE" ) >= ((TO_DATE(DATEADD('day', -1500, CURRENT_DATE()))))
+AND ( dim_merchant_mature_cohort."REPORT_DATE" ) < ((TO_DATE(DATEADD('day', 1500, DATEADD('day', -1500, CURRENT_DATE())))))))
+group by 1,2
+order by 1,2 desc
